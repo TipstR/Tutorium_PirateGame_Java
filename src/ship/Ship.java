@@ -2,63 +2,74 @@ package ship;
 
 import java.util.ArrayList;
 
-public class Ship {
-	private final static int MAX_WEIGHT_SLOOP = 200;
-	private final static int MAX_CREW_SLOOP = 60;
+public abstract class Ship {
+	// private final static int MAX_WEIGHT_SLOOP = 200;
+	// private final static int MAX_CREW_SLOOP = 60;
+	// private final static int MAX_CANNON_SLOOP = 30;
 	
 	private int holes;
 	private int water;
-	private int maxWeight;
 	private int weight;
-	private int maxCrew;
 	private int crew;
-	private String type;
 	
 	public Ship() {
 		
 	}
 	
-	public Ship(int maxWeight, int maxCrew) {
-		this.maxWeight = maxWeight;
-		this.maxCrew = maxCrew;
-		
-		this.type = "Custom";
-		
-		this.crew = 0;
-		this.weight = 0;
-		this.water = 0;
-		this.holes = 0;
+	
+	
+
+	public Ship(int holes, int water, int weight, int crew) {
+		this.holes = holes;
+		this.water = water;
+		this.weight = weight;
+		this.crew = crew;
+	}
+
+
+
+
+	public int getHoles() {
+		return this.holes;
 	}
 	
-	
-	public Ship(String type) {
-		
-		switch(type) {
-		case "sloop":
-			this.maxWeight = MAX_WEIGHT_SLOOP;
-			this.maxCrew = MAX_CREW_SLOOP;
-			this.type = type;
-			break;
-		
-		default:
-			this.maxWeight = -1;
-			this.maxCrew = -1;
-			this.type = "";
-			
-			
-			
-		}
-		
-		this.crew = 0;
-		this.weight = 0;
-		this.water = 0;
-		this.holes = 0;
-		
+	public void setHoles(int holes) {
+		this.holes = holes;
 	}
 	
+	public void addHoles(int amount) {
+		this.holes += amount;
+	}
+
+	public int getWater() {
+		return water;
+	}
+
+	public void setWater(int water) {
+		this.water = water;
+	}
+
+	public int getWeight() {
+		return weight;
+	}
+
+	public void setWeight(int weight) {
+		this.weight = weight;
+	}
 	
+	public void addWeight(int amount) {
+		this.weight += amount;
+	}
+
+	public int getCrew() {
+		return crew;
+	}
+
+	public void setCrew(int crew) {
+		this.crew = crew;
+	}
 	
-	
-	
-	
+	public void addCrew(int amount) {
+		this.crew += amount;
+	}
 }
