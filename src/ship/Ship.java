@@ -3,10 +3,6 @@ package ship;
 import java.util.ArrayList;
 
 public abstract class Ship {
-	// private final static int MAX_WEIGHT_SLOOP = 200;
-	// private final static int MAX_CREW_SLOOP = 60;
-	// private final static int MAX_CANNON_SLOOP = 30;
-	
 	private int holes;
 	private int water;
 	private int weight;
