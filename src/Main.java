@@ -1,23 +1,27 @@
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import Exceptions.NotEnoughGoldException;
+import Exceptions.TooFullCrewException;
 import ship.Ship;
 import ship.Sloop;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
+		Scanner scanner = new Scanner(System.in);	// Scanner for reading Input	
+		welcome();									// Print "Welcome" lines 
+		Player player = new Player(10000);				// Create new Player
+		boolean exit = false;						// exit for quitting game
+		String input = new String();				// input for Scanner
 		
-		welcome();
 		
-		Player player = new Player();
-		
-		boolean exit = false;
-		
-		String input = new String();
-		
+		// Going in the Game loop untill quitting game
 		while(!exit) {
 			
 			
@@ -48,33 +52,57 @@ public class Main {
 			input = scanner.next();
 			System.out.println("");
 			
+			// Town decisions
 			switch(input) {
 			
+			// Go in tavern
 			case "1":
-				tavern(player , scanner);
+				try {
+					tavern(player , scanner);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 				
+			// Go in shipyard
 			case "3":
-				shipyard(player, scanner);
+				try {
+					shipyard(player, scanner);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 				
+			// Look at player's ships	
 			case "4":
 				lookAtShips(player, scanner);
 				break;
 				
+			// Quit game
 			case "99":
 				exit = true;
+				
+				System.out.println("Exiting Game...");
+				myWait(2000);
+				
 				break;
 				
-			}
-			
-			
+			// Wrong Input handling
+			default:
+				System.out.println("Unknown command '" + input + "'");
+				myWait(2000);
+				break;				
+			}		
 		}
 		
 		scanner.close();
 		return;
 	}
 	
+	
+	// A function to print out a welcome for the start of the game
 	public static void welcome() {
 		String pirateGame = " A PIRATE GAME";
 		
@@ -91,7 +119,11 @@ public class Main {
 		myWait(1000);
 	}
 	
-	public static void tavern(Player player, Scanner scanner) {
+	
+	// Tavern 
+	public static void tavern(Player player, Scanner scanner) throws IOException {
+		
+		
 		System.out.println("You step into a Tavern.");
 		myWait(2000);
 		System.out.println("The Air is filled with the smell of sweat, alcohol and blood.");
@@ -106,43 +138,88 @@ public class Main {
 				+ " you have come to the right place!'");
 		myWait(2000);
 		
-		System.out.println("");
-		System.out.println("What do you want to do?");
-		myWait(300);
-		System.out.println("1: Hire crew");
-		myWait(300);
-		System.out.println("2: leave tavern");
-		myWait(300);
-		System.out.println("");
-		System.out.println("Your Input");
+		// Tavern loop
+		while(true) {
 		
-		String input = new String();
-		
-		input = scanner.next();
-		System.out.println("");
-		
-		switch(input) {
-		
-		case "1":
-			System.out.println("How many crew members do you want to hire?");
-			System.out.println("One man costs 20g");
 			System.out.println("");
-			System.out.println("Your gold: " + player.getGold());
+			System.out.println("What do you want to do?");
+			myWait(300);
+			System.out.println("1: Hire crew");
+			myWait(300);
+			System.out.println("99: leave tavern");
+			myWait(300);
 			System.out.println("");
-			System.out.print("Your Input: ");
+			System.out.println("Your Input");
+			
+			String input = new String();
 			
 			input = scanner.next();
+			System.out.println("");
 			
-			player.getFleet().get(0).addCrew(Integer.parseInt(input));
-			player.addGold(-20 * Integer.parseInt(input));
-			break;
-		
-		case "2":
-			return;
+			// Tavern decision 
+			switch(input) {
+			
+			// Hiring Crew
+			case "1":
+				System.out.println("How many crew members do you want to hire?");
+				System.out.println("One man costs 20g");
+				System.out.println("");
+				System.out.println("Your gold: " + player.getGold());
+				System.out.println("");
+				System.out.print("Your Input: ");
+				
+				input = scanner.next();
+				
+				try {
+				player.getFleet().get(0).addCrew(Integer.parseInt(input));
+				} catch(TooFullCrewException e) {
+					System.out.println("Your Ship cant't hold this much crew!");
+					
+					String line = "";
+					line = java.time.LocalDateTime.now().toString();
+					line = line + " " + e.getMessage();
+					
+					PrintWriter fileOut = new PrintWriter(new FileWriter("log.txt"));
+					fileOut.append(line);
+					fileOut.close();
+					
+					myWait(2000);
+					break;
+				}
+				try {
+					player.addGold(-20 * Integer.parseInt(input));
+
+				} catch (NotEnoughGoldException e) {
+					System.out.println("You don't have enough gold!");
+					
+					String line = "";
+					line = java.time.LocalDateTime.now().toString();
+					line = line + " " + e.getMessage();
+					
+					PrintWriter fileOut = new PrintWriter(new FileWriter("log.txt"));
+					fileOut.append(line);
+					fileOut.close();
+					
+					myWait(2000);
+					break;
+				}
+				break;
+			
+			// Exit Tavern
+			case "99":
+				return;
+				
+			// Wrong Input handling
+			default:
+				System.out.println("Unknown command '" + input + "'");
+				myWait(2000);
+				break;
+			}
 		}
 	}
 	
-	public static void shipyard(Player player, Scanner scanner) {
+	// Shipyard
+	public static void shipyard(Player player, Scanner scanner) throws IOException {
 		System.out.println("You step into a Shipyard.");
 		myWait(2000);
 		System.out.println("The Air is filled with the smell of wood, iron and old clothes.");
@@ -157,59 +234,105 @@ public class Main {
 				+ " you have come to the right place'");
 		myWait(2000);
 		
-		System.out.println("");
-		System.out.println("What do you want to do?");
-		myWait(300);
-		System.out.println("1: Buy Ships");
-		myWait(300);
-		System.out.println("2: leave shipyard");
-		myWait(300);
-		System.out.println("");
-		System.out.println("Your Input");
+		// Shipyard loop
+		while(true) {
 		
-		String input = new String();
-		
-		input = scanner.next();
-		System.out.println("");
-		
-		switch(input) {
-		
-		case "1":
 			System.out.println("");
-			System.out.println("Available Ships:");
+			System.out.println("What do you want to do?");
 			myWait(300);
-			System.out.println("1: Sloop | 5000g");
+			System.out.println("1: Buy Ships");
 			myWait(300);
-			System.out.println("2: cancel");
-			myWait(300);
-			System.out.println("");
-			System.out.println("Your Gold: " + player.getGold() + "g");
+			System.out.println("99: leave shipyard");
 			myWait(300);
 			System.out.println("");
 			System.out.println("Your Input");
+			
+			String input = new String();
+			
 			input = scanner.next();
 			System.out.println("");
 			
+			// Shipyard decision
 			switch(input) {
 			
+			// Buy new ship
 			case "1":
-				Sloop sloop = new Sloop(0, 0, 0 , 20, 10);
-				player.addShip(sloop);
-				player.addGold(-5000);
-				System.out.println("You Succesfully bought a new Sloop!");
+				boolean buyShipExit = false;
+				// new ship loop
+				while(!buyShipExit) {
+					System.out.println("");
+					System.out.println("Available Ships:");
+					myWait(300);
+					System.out.println("1: Sloop | 5000g");
+					myWait(300);
+					System.out.println("99: cancel");
+					myWait(300);
+					System.out.println("");
+					System.out.println("Your Gold: " + player.getGold() + "g");
+					myWait(300);
+					System.out.println("");
+					System.out.println("Your Input");
+					input = scanner.next();
+					System.out.println("");
+					
+					// buy ship decision
+					switch(input) {
+					
+					// buy sloop
+					case "1":
+						Sloop sloop = new Sloop(0, 0, 0 , 20, 10);
+						player.addShip(sloop);
+						try {
+							player.addGold(-5000);
+
+						} catch (NotEnoughGoldException e) {
+							System.out.println("You don't have enough gold!");
+							
+							String line = "";
+							line = java.time.LocalDateTime.now().toString();
+							line = line + " " + e.getMessage();
+							
+							PrintWriter fileOut = new PrintWriter(new FileWriter("log.txt"));
+							fileOut.append(line);
+							fileOut.close();
+							
+							myWait(2000);
+							break;
+						}
+						System.out.println("You Succesfully bought a new Sloop!");
+						buyShipExit = true;
+						break;
+					
+					// cancel purchase
+					case "99":
+						buyShipExit = true;
+						break;
+						
+					// Wrong Input handling
+					default:
+						System.out.println("Unknown command '" + input + "'");
+						myWait(2000);
+						break;
+					}
+					
+				}
 				break;
 			
-			case "2":
+			// Exit shipyard
+			case "99":
+				return;
+				
+			// Wrong Input handling	
+			default:
+				System.out.println("Unknown command '" + input + "'");
+				myWait(2000);
 				break;
 			}
-			break;
-		
-		case "2":
-			return;
 		}
 		
 	}
 	
+	// Look at Ships
 	public static void lookAtShips(Player player, Scanner scanner) {
 		ArrayList<Ship> fleet = player.getFleet();
 		
@@ -224,20 +347,28 @@ public class Main {
 			System.out.println(fleet.get(i));
 		}
 		
-		System.out.println("");
-		System.out.println("1: exit");
-		System.out.println("");
-		System.out.print("Your Input: ");
-		
-		String input = scanner.next();
-		
-		if(input == "1") {
-			return;
+		// Look at ships loop
+		while (true) {
+			System.out.println("");
+			System.out.println("1: exit");
+			System.out.println("");
+			System.out.print("Your Input: ");
+			
+			String input = scanner.next();
+			
+			// Look at ships decision
+			if(input.equals("1")) {
+				return;
+			} else { 	// Wrong Input handling
+				System.out.println("Unknown command '" + input + "'");
+				myWait(2000);
+			}
 		}
 		
 		
 	}
 	
+	// helper function for printing text letter by letter
 	public static void slowPrint(String str, long delay) {
 		for (int i=0; i<str.length(); i++) {
 			System.out.print(str.charAt(i));
@@ -251,6 +382,7 @@ public class Main {
 		
 	}
 	
+	// helper function for waiting
 	public static void myWait(long ms) {
 		try {
 			TimeUnit.MILLISECONDS.sleep(ms);
