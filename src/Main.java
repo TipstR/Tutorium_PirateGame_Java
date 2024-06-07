@@ -170,22 +170,7 @@ public class Main {
 				
 				input = scanner.next();
 				
-				try {
-				player.getFleet().get(0).addCrew(Integer.parseInt(input));
-				} catch(TooFullCrewException e) {
-					System.out.println("Your Ship cant't hold this much crew!");
-					
-					String line = "";
-					line = java.time.LocalDateTime.now().toString();
-					line = line + " " + e.getMessage();
-					
-					PrintWriter fileOut = new PrintWriter(new FileWriter("log.txt"));
-					fileOut.append(line);
-					fileOut.close();
-					
-					myWait(2000);
-					break;
-				}
+				
 				try {
 					player.addGold(-20 * Integer.parseInt(input));
 
@@ -203,6 +188,23 @@ public class Main {
 					myWait(2000);
 					break;
 				}
+				try {
+					player.getFleet().get(0).addCrew(Integer.parseInt(input));
+					} catch(TooFullCrewException e) {
+						System.out.println("Your Ship cant't hold this much crew!");
+						
+						String line = "";
+						line = java.time.LocalDateTime.now().toString();
+						line = line + " " + e.getMessage();
+						
+						PrintWriter fileOut = new PrintWriter(new FileWriter("log.txt"));
+						fileOut.append(line);
+						fileOut.close();
+						
+						myWait(2000);
+						break;
+					}
+				
 				break;
 			
 			// Exit Tavern
@@ -280,8 +282,7 @@ public class Main {
 					
 					// buy sloop
 					case "1":
-						Sloop sloop = new Sloop(0, 0, 0 , 20, 10);
-						player.addShip(sloop);
+						
 						try {
 							player.addGold(-5000);
 
@@ -299,6 +300,10 @@ public class Main {
 							myWait(2000);
 							break;
 						}
+						
+						Sloop sloop = new Sloop(0, 0, 0 , 20, 10);
+						player.addShip(sloop);
+						
 						System.out.println("You Succesfully bought a new Sloop!");
 						buyShipExit = true;
 						break;

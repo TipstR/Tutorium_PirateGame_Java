@@ -54,7 +54,11 @@ public abstract class Ship {
 	}
 
 	public void setCrew(int crew) {
-		this.crew = crew;
+		if(crew < 0) {
+			System.out.println("Crew must be bigger than 0!");
+		} else {
+			this.crew = crew;
+		}
 	}
 	
 	// Function for adding or subtracting holes
